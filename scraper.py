@@ -30,6 +30,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.request
 import urllib.error
 
@@ -328,6 +329,7 @@ def main():
                 token,
             )
             posted_ids.add(listing["id"])
+            time.sleep(1.2)  # stay under Slack's 1 msg/sec rate limit
 
         cat_state["posted_ids"] = list(posted_ids)
         total_new += len(new_listings)
