@@ -46,29 +46,85 @@ CATEGORIES = [
         "slug": "software_engineering",
         "heading": "Software Engineering Internship Roles",
         "parent_texts": [
-            "yay!! found some SWE jobs!! 😭✨ (but… they look hard… you can do it… i believe in you…!)",
-            "i found SWE jobs…! chiikawa is cheering for you…! 🥺💪",
-            "look look!! so many SWE jobs!! 😳✨ do your best…!",
-            "brought you some SWE jobs~! happy news… probably… 😶‍🌫️✨",
-            "wait… SWE jobs appeared…!? chiikawa is surprised…! but here they are 🫣💼",
+            "BEE DO BEE DO!! 🚨 new SWE job go brrr!! para tú!! apply apply!!",
+            "ooooh… SWE jobba jobba!! 👀 me find!! me smort!!",
+            "WHAAAT. SWE job!! bottom text. BANANA 🍌",
+            "hehehe… SWE job drop!! you go apply now yes?? yes!! 🎉",
+            "me no sure what SWE mean but me find job!! poopaye!! 👋",
         ],
     },
     {
         "slug": "product_management",
         "heading": "Product Management Internship Roles",
         "parent_texts": [
-            "yay!! found some PM jobs!! 😭✨ (but… they look hard… you can do it… i believe in you…!)",
-            "i found PM jobs…! chiikawa is cheering for you…! 🥺💪",
-            "look look!! so many PM jobs!! 😳✨ do your best…!",
-            "brought you some PM jobs~! happy news… probably… 😶‍🌫️✨",
-            "wait… PM jobs appeared…!? chiikawa is surprised…! but here they are 🫣💼",
+            "BEE DO BEE DO!! 🚨 new PM job go brrr!! para tú!! apply apply!!",
+            "ooooh… PM jobba jobba!! 👀 me find!! me smort!!",
+            "WHAAAT. PM job!! bottom text. BANANA 🍌",
+            "hehehe… PM job drop!! you go apply now yes?? yes!! 🎉",
+            "me no sure what PM mean but me find job!! poopaye!! 👋",
         ],
     },
     # Other categories available in this repo, if you want to add them later:
-    # {"slug": "data_science_ai_ml", "heading": "Data Science, AI & Machine Learning Internship Roles", "parent_texts": ["AIのおしごとだよ…！ 🤖✨"]},
-    # {"slug": "quant_finance", "heading": "Quantitative Finance Internship Roles", "parent_texts": ["おかねのおしごとだよ…！ 📈✨"]},
-    # {"slug": "hardware_engineering", "heading": "Hardware Engineering Internship Roles", "parent_texts": ["ハードウェアのおしごとだよ…！ 🔧✨"]},
+    # {"slug": "data_science_ai_ml", "heading": "Data Science, AI & Machine Learning Internship Roles", "parent_texts": ["..."]},
+    # {"slug": "quant_finance", "heading": "Quantitative Finance Internship Roles", "parent_texts": ["..."]},
+    # {"slug": "hardware_engineering", "heading": "Hardware Engineering Internship Roles", "parent_texts": ["..."]},
 ]
+
+# Only post roles from these companies OR roles marked 🔥 in the repo.
+# Matching is case-insensitive substring: "Google" matches "Google LLC", etc.
+COMPANY_ALLOWLIST = {
+    # Big Tech
+    "google", "meta", "apple", "amazon", "microsoft", "netflix",
+    # AI Labs
+    "openai", "anthropic", "deepmind", "xai", "scale ai", "cohere", "perplexity",
+    "mistral", "stability ai", "hugging face", "together ai", "character.ai",
+    "harvey", "runway", "elevenlabs", "weights & biases", "adept", "cognition", "pika",
+    # Quant / Trading
+    "jane street", "citadel", "two sigma", "hudson river trading", "d.e. shaw",
+    "jump trading", "akuna capital", "optiver", "virtu financial", "point72",
+    "imc trading", "susquehanna", "tower research", "drw", "five rings capital",
+    "wolverine trading",
+    # Prestige Startups
+    "stripe", "figma", "databricks", "snowflake", "palantir", "anduril", "ramp",
+    "rippling", "brex", "notion", "canva", "plaid", "airtable", "retool", "replit",
+    "vercel", "linear", "loom", "intercom", "cloudflare", "twilio", "okta",
+    "hashicorp", "confluent", "dbt labs", "airbyte", "fivetran", "ironclad",
+    "benchling", "superhuman",
+    # Aerospace / Defense
+    "spacex", "tesla", "waymo", "cruise", "aurora innovation", "joby aviation",
+    "archer aviation", "wisk", "blue origin", "rocket lab", "relativity space",
+    "shield ai",
+    # Fintech
+    "robinhood", "coinbase", "affirm", "chime", "marqeta", "navan", "klarna",
+    "toast", "block", "paypal", "mercury",
+    # Semiconductors / Hardware
+    "nvidia", "amd", "intel", "qualcomm", "broadcom", "arm", "lam research",
+    "applied materials", "kla", "micron", "texas instruments", "cadence",
+    "synopsys", "tenstorrent",
+    # Consumer Tech
+    "uber", "lyft", "airbnb", "doordash", "instacart", "snap", "pinterest",
+    "spotify", "reddit", "discord", "duolingo", "niantic", "roblox", "epic games",
+    "riot games", "unity",
+    # Enterprise / SaaS
+    "adobe", "salesforce", "servicenow", "workday", "oracle", "atlassian",
+    "hubspot", "zendesk", "asana", "monday.com", "box", "dropbox", "zoom",
+    "splunk", "datadog", "mongodb", "elastic", "grafana", "amplitude", "sentry",
+    # Cybersecurity
+    "palo alto networks", "crowdstrike", "zscaler", "sentinelone", "fortinet", "wiz",
+    # Dev Tools
+    "github", "gitlab", "postman", "launchdarkly", "docker", "pulumi", "cursor", "warp",
+    # AI Chips / Infra
+    "groq", "cerebras", "sambanova", "graphcore", "etched",
+    # Bio / Health Tech
+    "recursion", "tempus", "insitro", "pathai", "10x genomics", "oscar health",
+    # Finance
+    "goldman sachs", "jpmorgan", "bloomberg", "visa", "mastercard",
+    # Automotive / Robotics
+    "mobileye", "nuro", "zoox", "apptronik", "figure ai", "boston dynamics",
+    # Other
+    "akamai", "fastly", "supabase", "planetscale", "electronic arts", "activision",
+    "valve", "nintendo", "midjourney", "mixpanel", "segment", "twitter", "linkedin",
+}
 
 
 def fetch_readme() -> str:
@@ -180,6 +236,7 @@ def parse_listings(section_html: str):
 
     listings = []
     last_company = None
+    last_is_hot = False
 
     for cells in parser.rows:
         if len(cells) < 4:
@@ -191,11 +248,14 @@ def parse_listings(section_html: str):
         if company_text in ("Company", ""):
             continue
 
+        is_hot = "🔥" in company_text
         if "↳" in company_text:
             company = last_company
+            is_hot = is_hot or last_is_hot
         else:
             company = company_text.lstrip("🔥 ").strip()
             last_company = company
+            last_is_hot = is_hot
 
         if not company:
             continue
@@ -227,9 +287,18 @@ def parse_listings(section_html: str):
             "location": location,
             "link": link,
             "age": age,
+            "is_hot": is_hot,
         })
 
     return listings
+
+
+def is_allowed(listing: dict) -> bool:
+    """Return True if the listing is from an allowlisted company or is marked 🔥."""
+    if listing.get("is_hot"):
+        return True
+    name = listing["company"].lower()
+    return any(term in name for term in COMPANY_ALLOWLIST)
 
 
 def default_state():
@@ -316,9 +385,10 @@ def main():
 
         cat_state = state["categories"][slug]
         posted_ids = set(cat_state.get("posted_ids", []))
-        new_listings = [l for l in listings if l["id"] not in posted_ids]
+        allowed = [l for l in listings if is_allowed(l)]
+        new_listings = [l for l in allowed if l["id"] not in posted_ids]
 
-        print(f"[{slug}] Found {len(listings)} current listings, {len(new_listings)} new.")
+        print(f"[{slug}] Found {len(listings)} total, {len(allowed)} allowed, {len(new_listings)} new.")
 
         if not new_listings:
             continue
