@@ -24,6 +24,8 @@ source.
 """
 
 import hashlib
+import html as html_module
+import html.parser
 import json
 import os
 import re
@@ -81,79 +83,136 @@ def extract_section(readme: str, heading: str) -> str:
     return "\n".join(lines[start:end])
 
 
-ROW_RE = re.compile(r"^\|(.+)\|\s*$")
-LINK_RE = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
-COMPANY_RE = re.compile(r"\*\*\[([^\]]+)\]\(([^)]+)\)\*\*")
-APPLY_RE = re.compile(r"\[!\[Apply\]\([^)]*\)\]\(([^)]+)\)")
+HREF_RE = re.compile(r'href=["\']([^"\']+)["\']')
+IMG_ALT_RE = re.compile(r'<img[^>]+alt=["\']Apply["\']', re.IGNORECASE)
 
 
-def split_row(row: str):
-    """Split a markdown table row into cells, respecting the leading/trailing pipes."""
-    m = ROW_RE.match(row.strip())
-    if not m:
-        return None
-    # Naive split on unescaped pipes (table cells in this README don't contain literal pipes)
-    return [c.strip() for c in m.group(1).split("|")]
+def _strip_tags(s: str) -> str:
+    """Remove HTML tags and decode entities, collapsing whitespace."""
+    s = re.sub(r"<br\s*/?>", " ", s, flags=re.IGNORECASE)
+    s = re.sub(r"<[^>]+>", "", s)
+    s = html_module.unescape(s)
+    return re.sub(r"\s+", " ", s).strip()
 
 
-def parse_listings(section_md: str):
+class _TableParser(html.parser.HTMLParser):
+    """Collect all <tbody> rows from an HTML snippet as lists of raw-HTML cell strings."""
+
+    def __init__(self):
+        super().__init__()
+        self.rows: list[list[str]] = []
+        self._in_tbody = False
+        self._in_tr = False
+        self._in_td = False
+        self._depth = 0          # nesting depth inside a <td>
+        self._cell_buf = ""
+        self._current_row: list[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "tbody":
+            self._in_tbody = True
+        elif self._in_tbody and tag == "tr":
+            self._in_tr = True
+            self._current_row = []
+        elif self._in_tr and tag == "td":
+            if self._in_td:
+                self._depth += 1
+            else:
+                self._in_td = True
+                self._depth = 0
+                self._cell_buf = ""
+            # re-emit the tag into the buffer so link hrefs survive
+            attr_str = "".join(f' {k}="{v}"' for k, v in attrs if v is not None)
+            self._cell_buf += f"<{tag}{attr_str}>"
+        elif self._in_td:
+            attr_str = "".join(f' {k}="{v}"' for k, v in attrs if v is not None)
+            self._cell_buf += f"<{tag}{attr_str}>"
+
+    def handle_endtag(self, tag):
+        if tag == "tbody":
+            self._in_tbody = False
+        elif self._in_tbody and tag == "tr" and self._in_tr:
+            self._in_tr = False
+            if self._current_row:
+                self.rows.append(self._current_row)
+        elif self._in_td and tag == "td":
+            if self._depth > 0:
+                self._depth -= 1
+                self._cell_buf += f"</{tag}>"
+            else:
+                self._current_row.append(self._cell_buf)
+                self._in_td = False
+                self._cell_buf = ""
+        elif self._in_td:
+            self._cell_buf += f"</{tag}>"
+
+    def handle_data(self, data):
+        if self._in_td:
+            self._cell_buf += data
+
+    def handle_entityref(self, name):
+        if self._in_td:
+            self._cell_buf += f"&{name};"
+
+    def handle_charref(self, name):
+        if self._in_td:
+            self._cell_buf += f"&#{name};"
+
+
+def parse_listings(section_html: str):
+    parser = _TableParser()
+    parser.feed(section_html)
+
     listings = []
     last_company = None
 
-    for raw_line in section_md.splitlines():
-        line = raw_line.strip()
-        if not line.startswith("|"):
+    for cells in parser.rows:
+        if len(cells) < 4:
             continue
-        # skip header / separator rows
-        if line.startswith("| ---") or re.match(r"^\|[\s-]+\|", line):
-            continue
-        cells = split_row(line)
-        if not cells or len(cells) < 5:
-            continue
-        company_cell, role_cell, location_cell, application_cell, age_cell = cells[:5]
+        company_cell, role_cell, location_cell, application_cell = cells[:4]
+        age_cell = cells[4].strip() if len(cells) > 4 else ""
 
-        if company_cell.strip() in ("Company", ""):
+        company_text = _strip_tags(company_cell)
+        if company_text in ("Company", ""):
             continue
 
-        if "↳" in company_cell:
+        if "↳" in company_text:
             company = last_company
         else:
-            cm = COMPANY_RE.search(company_cell)
-            company = cm.group(1) if cm else re.sub(r"[*_🔥]", "", company_cell).strip()
+            company = company_text.lstrip("🔥 ").strip()
             last_company = company
 
         if not company:
             continue
 
-        role = re.sub(r"\s+", " ", role_cell).strip()
+        role = _strip_tags(role_cell)
 
-        apply_match = APPLY_RE.search(application_cell)
+        # Prefer the first href on an <img alt="Apply"> link; fall back to any first href.
+        apply_match = IMG_ALT_RE.search(application_cell)
         if apply_match:
-            link = apply_match.group(1)
+            # walk backwards from the img to find its enclosing <a href=...>
+            before = application_cell[: apply_match.start()]
+            hrefs = HREF_RE.findall(before)
+            link = hrefs[-1] if hrefs else None
         else:
-            # fall back to first link in the cell (covers any format change)
-            lm = LINK_RE.search(application_cell)
-            link = lm.group(2) if lm else None
+            hrefs = HREF_RE.findall(application_cell)
+            link = hrefs[0] if hrefs else None
 
         if not link:
-            # No application link usually means the role is closed - skip it
             continue
 
-        location = re.sub(r"\s+", " ", location_cell).strip()
-        age = age_cell.strip()
+        location = _strip_tags(location_cell)
+        age = _strip_tags(age_cell)
 
         uid = hashlib.sha256(f"{company}|{role}|{location}|{link}".encode("utf-8")).hexdigest()[:16]
-
-        listings.append(
-            {
-                "id": uid,
-                "company": company,
-                "role": role,
-                "location": location,
-                "link": link,
-                "age": age,
-            }
-        )
+        listings.append({
+            "id": uid,
+            "company": company,
+            "role": role,
+            "location": location,
+            "link": link,
+            "age": age,
+        })
 
     return listings
 
