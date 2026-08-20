@@ -93,7 +93,7 @@ COMPANY_ALLOWLIST = {
     # Aerospace / Defense
     "spacex", "tesla", "waymo", "cruise", "aurora innovation", "joby aviation",
     "archer aviation", "wisk", "blue origin", "rocket lab", "relativity space",
-    "shield ai",
+    "shield ai", "northrop grumman", "boeing",
     # Fintech
     "robinhood", "coinbase", "affirm", "chime", "marqeta", "navan", "klarna",
     "toast", "block", "paypal", "mercury",
