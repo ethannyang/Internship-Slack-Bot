@@ -64,8 +64,18 @@ CATEGORIES = [
             "me no sure what PM mean but me find job!! poopaye!! 👋",
         ],
     },
+    {
+        "slug": "data_science_ai_ml",
+        "heading": "Data Science, AI & Machine Learning Internship Roles",
+        "parent_texts": [
+            "BEE DO BEE DO!! 🚨 new AI/ML job go brrr!! para tú!! apply apply!!",
+            "ooooh… AI jobba jobba!! 👀 me find!! me smort!!",
+            "WHAAAT. AI/ML job!! bottom text. BANANA 🍌",
+            "hehehe… AI/ML job drop!! you go apply now yes?? yes!! 🎉",
+            "me no sure what ML mean but me find job!! poopaye!! 👋",
+        ],
+    },
     # Other categories available in this repo, if you want to add them later:
-    # {"slug": "data_science_ai_ml", "heading": "Data Science, AI & Machine Learning Internship Roles", "parent_texts": ["..."]},
     # {"slug": "quant_finance", "heading": "Quantitative Finance Internship Roles", "parent_texts": ["..."]},
     # {"slug": "hardware_engineering", "heading": "Hardware Engineering Internship Roles", "parent_texts": ["..."]},
 ]
