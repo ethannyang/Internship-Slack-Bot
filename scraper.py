@@ -103,7 +103,8 @@ IMG_ALT_RE = re.compile(r'<img[^>]+alt=["\']Apply["\']', re.IGNORECASE)
 
 def _strip_tags(s: str) -> str:
     """Remove HTML tags and decode entities, collapsing whitespace."""
-    s = re.sub(r"<br\s*/?>", " ", s, flags=re.IGNORECASE)
+    s = re.sub(r"</summary>", ": ", s, flags=re.IGNORECASE)
+    s = re.sub(r"<br\s*/?>", ", ", s, flags=re.IGNORECASE)
     s = re.sub(r"<[^>]+>", "", s)
     s = html_module.unescape(s)
     return re.sub(r"\s+", " ", s).strip()
