@@ -28,6 +28,7 @@ import html as html_module
 import html.parser
 import json
 import os
+import random
 import re
 import sys
 import time
@@ -44,17 +45,29 @@ CATEGORIES = [
     {
         "slug": "software_engineering",
         "heading": "Software Engineering Internship Roles",
-        "parent_text": ":computer: *Summer 2027 Software Engineering Internships* — new postings are added to this thread as they appear in [SimplifyJobs/Summer2027-Internships](https://github.com/SimplifyJobs/Summer2027-Internships).",
+        "parent_texts": [
+            "やったー！！ SWEのお仕事みつけたよ〜！！ 😭✨ (でも…むずかしそう…がんばれ…！)",
+            "SWEのお仕事だよ…！ ちいかわもおうえんしてるよ…！ 🥺💪",
+            "みてみて！！ SWEのおしごと、いっぱいあったよ！！ 😳✨ がんばって…！",
+            "SWEのおしごと、もってきたよ〜！ うれしいね…たぶん…😶‍🌫️✨",
+            "えっ…SWEのおしごとが…！？ ちいかわ、びっくりしちゃった…！ でもおしえてあげるね 🫣💼",
+        ],
     },
     {
         "slug": "product_management",
         "heading": "Product Management Internship Roles",
-        "parent_text": ":briefcase: *Summer 2027 Product Management Internships* — new postings are added to this thread as they appear in [SimplifyJobs/Summer2027-Internships](https://github.com/SimplifyJobs/Summer2027-Internships).",
+        "parent_texts": [
+            "やったー！！ PMのお仕事みつけたよ〜！！ 😭✨ (でも…むずかしそう…がんばれ…！)",
+            "PMのお仕事だよ…！ ちいかわもおうえんしてるよ…！ 🥺💪",
+            "みてみて！！ PMのおしごと、いっぱいあったよ！！ 😳✨ がんばって…！",
+            "PMのおしごと、もってきたよ〜！ うれしいね…たぶん…😶‍🌫️✨",
+            "えっ…PMのおしごとが…！？ ちいかわ、びっくりしちゃった…！ でもおしえてあげるね 🫣💼",
+        ],
     },
     # Other categories available in this repo, if you want to add them later:
-    # {"slug": "data_science_ai_ml", "heading": "Data Science, AI & Machine Learning Internship Roles", "parent_text": ":robot_face: *Summer 2027 Data Science / AI / ML Internships* — new postings are added to this thread."},
-    # {"slug": "quant_finance", "heading": "Quantitative Finance Internship Roles", "parent_text": ":chart_with_upwards_trend: *Summer 2027 Quantitative Finance Internships* — new postings are added to this thread."},
-    # {"slug": "hardware_engineering", "heading": "Hardware Engineering Internship Roles", "parent_text": ":wrench: *Summer 2027 Hardware Engineering Internships* — new postings are added to this thread."},
+    # {"slug": "data_science_ai_ml", "heading": "Data Science, AI & Machine Learning Internship Roles", "parent_texts": ["AIのおしごとだよ…！ 🤖✨"]},
+    # {"slug": "quant_finance", "heading": "Quantitative Finance Internship Roles", "parent_texts": ["おかねのおしごとだよ…！ 📈✨"]},
+    # {"slug": "hardware_engineering", "heading": "Hardware Engineering Internship Roles", "parent_texts": ["ハードウェアのおしごとだよ…！ 🔧✨"]},
 ]
 
 
@@ -263,12 +276,12 @@ def slack_api(method: str, payload: dict, token: str) -> dict:
     return result
 
 
-def ensure_thread_parent(cat_state: dict, parent_text: str, token: str, channel: str) -> str:
+def ensure_thread_parent(cat_state: dict, parent_texts: list, token: str, channel: str) -> str:
     if cat_state.get("thread_ts"):
         return cat_state["thread_ts"]
     result = slack_api(
         "chat.postMessage",
-        {"channel": channel, "text": parent_text},
+        {"channel": channel, "text": random.choice(parent_texts)},
         token,
     )
     cat_state["thread_ts"] = result["ts"]
@@ -315,7 +328,7 @@ def main():
                 print(format_listing(l))
             continue
 
-        thread_ts = ensure_thread_parent(cat_state, cat["parent_text"], token, channel)
+        thread_ts = ensure_thread_parent(cat_state, cat["parent_texts"], token, channel)
 
         for listing in reversed(new_listings):  # oldest-looking first
             slack_api(
