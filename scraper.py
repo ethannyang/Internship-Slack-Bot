@@ -119,6 +119,7 @@ COMPANY_ALLOWLIST = {
     "recursion", "tempus", "insitro", "pathai", "10x genomics", "oscar health",
     # Finance
     "goldman sachs", "jpmorgan", "bloomberg", "visa", "mastercard",
+    "capital one", "american express",
     # Automotive / Robotics
     "mobileye", "nuro", "zoox", "apptronik", "figure ai", "boston dynamics",
     # Other
