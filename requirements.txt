@@ -1,0 +1,2 @@
+# scraper.py uses only the Python standard library (urllib, json, re, hashlib) —
+# no third-party dependencies required.
