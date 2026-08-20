@@ -293,12 +293,18 @@ def parse_listings(section_html: str):
     return listings
 
 
+def _normalize(s: str) -> str:
+    """Lowercase and strip spaces/punctuation for fuzzy company matching."""
+    return re.sub(r"[\s.\-&,']", "", s.lower())
+
+
 def is_allowed(listing: dict) -> bool:
     """Return True if the listing is from an allowlisted company or is marked 🔥."""
     if listing.get("is_hot"):
         return True
-    name = listing["company"].lower()
-    return any(term in name for term in COMPANY_ALLOWLIST)
+    normalized_name = _normalize(listing["company"])
+    return any(_normalize(term) in normalized_name or normalized_name in _normalize(term)
+               for term in COMPANY_ALLOWLIST)
 
 
 def default_state():
