@@ -319,7 +319,7 @@ def is_allowed(listing: dict) -> bool:
 
 
 def default_state():
-    return {"categories": {c["slug"]: {"posted_ids": [], "thread_ts": None} for c in CATEGORIES}}
+    return {"categories": {c["slug"]: {"posted_ids": []} for c in CATEGORIES}}
 
 
 def load_state():
@@ -329,14 +329,8 @@ def load_state():
             saved = json.load(f)
         if "categories" in saved:
             for slug, cat_state in saved["categories"].items():
-                state["categories"].setdefault(slug, {"posted_ids": [], "thread_ts": None})
-                state["categories"][slug].update(cat_state)
-        elif "posted_ids" in saved:
-            # Legacy single-category format from an earlier version of this script.
-            # Assume it was tracking Product Management and migrate it forward.
-            state["categories"].setdefault("product_management", {"posted_ids": [], "thread_ts": None})
-            state["categories"]["product_management"]["posted_ids"] = saved.get("posted_ids", [])
-            state["categories"]["product_management"]["thread_ts"] = saved.get("thread_ts")
+                state["categories"].setdefault(slug, {"posted_ids": []})
+                state["categories"][slug]["posted_ids"] = cat_state.get("posted_ids", [])
     return state
 
 
@@ -363,16 +357,13 @@ def slack_api(method: str, payload: dict, token: str) -> dict:
     return result
 
 
-def ensure_thread_parent(cat_state: dict, parent_texts: list, token: str, channel: str) -> str:
-    if cat_state.get("thread_ts"):
-        return cat_state["thread_ts"]
+def create_thread_parent(parent_texts: list, token: str, channel: str) -> str:
     result = slack_api(
         "chat.postMessage",
         {"channel": channel, "text": random.choice(parent_texts)},
         token,
     )
-    cat_state["thread_ts"] = result["ts"]
-    return cat_state["thread_ts"]
+    return result["ts"]
 
 
 def format_listing(listing: dict) -> str:
@@ -416,7 +407,7 @@ def main():
                 print(format_listing(l))
             continue
 
-        thread_ts = ensure_thread_parent(cat_state, cat["parent_texts"], token, channel)
+        thread_ts = create_thread_parent(cat["parent_texts"], token, channel)
 
         for listing in reversed(new_listings):  # oldest-looking first
             slack_api(
